@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'src/prisma.service'
 import { generateSlug } from 'src/utils/generate-slug'
-import { GroupCreateDto, GroupDto } from './category.dto'
+import { GroupCreateDto, GroupDto } from './group.dto'
 import { returnGroupObject } from './return-group.object'
 
 @Injectable()

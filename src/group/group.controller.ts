@@ -11,7 +11,7 @@ import {
   ValidationPipe
 } from '@nestjs/common'
 import { Auth } from 'src/auth/decorators/auth.decorator'
-import { GroupCreateDto, GroupDto } from './category.dto'
+import { GroupCreateDto, GroupDto } from './group.dto'
 import { GroupService } from './group.service'
 
 @Controller('groups')
@@ -34,16 +34,16 @@ export class GroupController {
     return this.groupService.byId(+id)
   }
 
-  @HttpCode(200)
   @Auth()
+  @HttpCode(200)
   @Post()
   async create(@Body() dto: GroupCreateDto) {
     return this.groupService.create(dto)
   }
 
   @UsePipes(new ValidationPipe())
-  @HttpCode(200)
   @Auth()
+  @HttpCode(200)
   @Put(':id')
   async update(@Param('id') id: string, @Body() dto: GroupDto) {
     return this.groupService.update(+id, dto)

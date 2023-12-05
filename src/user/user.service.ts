@@ -1,9 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException
+} from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { hash } from 'argon2'
 import { PrismaService } from 'src/prisma.service'
-import { returnUserObject } from './return-user.object'
-import { UserDto } from './user.dto'
+import { returnUserFullObject, returnUserObject } from './return-user.object'
+import { UserDto, UserUpdateDto } from './user.dto'
 
 @Injectable()
 export class UserService {
@@ -15,11 +19,59 @@ export class UserService {
     })
   }
 
-  async byId(id: number, selectObject: Prisma.UserSelect = {}) {
+  async byId(id: number) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: id
+      },
+      select: returnUserObject
+    })
+
+    if (!user) {
+      throw new NotFoundException('User not found')
+    }
+
+    return user
+  }
+
+  async update(id: number, dto: UserUpdateDto) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: {
+        id
+      }
+    })
+
+    if (!existingUser) {
+      throw new NotFoundException('User is not exist')
+    }
+
+    const existingGroup = await this.prisma.group.findUnique({
+      where: {
+        id: +dto.groupId
+      }
+    })
+
+    if (!existingGroup) {
+      throw new NotFoundException('Group is not exist')
+    }
+
+    return this.prisma.user.update({
+      where: {
+        id
+      },
+      data: {
+        name: dto.name,
+        surName: dto.surName,
+        groupId: +dto.groupId
+      }
+    })
+  }
+
+  async profileById(id: number, selectObject: Prisma.UserSelect = {}) {
     const user = await this.prisma.user.findUnique({
       where: { id },
       select: {
-        ...returnUserObject,
+        ...returnUserFullObject,
         ...selectObject
       }
     })
@@ -40,7 +92,7 @@ export class UserService {
       throw new BadRequestException('Email already in use')
     }
 
-    const user = await this.byId(id)
+    const user = await this.profileById(id)
 
     return this.prisma.user.update({
       where: {
@@ -49,6 +101,7 @@ export class UserService {
       data: {
         email: dto.email,
         name: dto.name,
+        surName: dto.surName,
         password: dto.password ? await hash(dto.password) : user.password
       }
     })

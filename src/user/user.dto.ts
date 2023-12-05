@@ -11,8 +11,25 @@ export class UserDto {
   @IsString()
   name: string
 
+  @IsNotEmpty()
+  @IsString()
+  surName: string
+
   @IsOptional()
   groupId: number
 
   isAdmin: boolean
+}
+
+export class UserUpdateDto {
+  @IsNotEmpty()
+  @IsString()
+  name: string
+
+  @IsNotEmpty()
+  @IsString()
+  surName: string
+
+  @IsOptional()
+  groupId: number
 }
