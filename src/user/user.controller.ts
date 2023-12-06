@@ -24,20 +24,6 @@ export class UserController {
     return this.userService.getAll()
   }
 
-  @Get(':id')
-  @Auth()
-  async getById(@Param('id') id: string) {
-    return this.userService.byId(+id)
-  }
-
-  @UsePipes(new ValidationPipe())
-  @Auth()
-  @HttpCode(200)
-  @Put(':id')
-  async update(@Param('id') id: string, @Body() dto: UserUpdateDto) {
-    return this.userService.update(+id, dto)
-  }
-
   @Get('profile')
   @Auth()
   async getProfile(@CurrentUser('id') id: number) {
@@ -50,5 +36,19 @@ export class UserController {
   @Put('profile')
   async getNewTokens(@CurrentUser('id') id: number, @Body() dto: UserDto) {
     return this.userService.updateProfile(id, dto)
+  }
+
+  @Get(':id')
+  @Auth()
+  async getById(@Param('id') id: string) {
+    return this.userService.byId(+id)
+  }
+
+  @UsePipes(new ValidationPipe())
+  @Auth()
+  @HttpCode(200)
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() dto: UserUpdateDto) {
+    return this.userService.update(+id, dto)
   }
 }

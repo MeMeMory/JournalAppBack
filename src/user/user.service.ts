@@ -69,7 +69,9 @@ export class UserService {
 
   async profileById(id: number, selectObject: Prisma.UserSelect = {}) {
     const user = await this.prisma.user.findUnique({
-      where: { id },
+      where: {
+        id
+      },
       select: {
         ...returnUserFullObject,
         ...selectObject
